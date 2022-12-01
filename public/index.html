@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <div id="article_list"></div>
+    <button onclick="post_article()">新規投稿</button>
+</body>
+
+<head>
+    <meta charset="utf-8"/>
+    <script src="https://cdn.jsdelivr.net/npm/marked@3.0.7/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="highlight/styles/github.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function sp_items(text){
+            return text.split('@&@');
+        }
+
+        function sp_types(text){
+            return text.split('@%@');
+        }
+
+        function article_show(title){
+            window.location.href = `post_view.html?@&@${title}`;
+        }
+
+        function post_article(){
+            window.location.href = "post_form.html";
+        }
+
+        window.onload = async (event) => {
+            const response = await fetch("/get_title", { method: "GET" });
+            let [titles, authors] = sp_types(await response.text());
+            titles = sp_items(titles);
+            authors = sp_items(authors);
+            for (const i in titles){
+                const add_html = `<div style="border: ridge" onclick="article_show('${titles[i]}')">${titles[i]} by ${authors[i]}</div>`
+                document.getElementById('article_list').innerHTML += add_html;
+            }
+        }
+    </script>
+</head>
+
+</html>

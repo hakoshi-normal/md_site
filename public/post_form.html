@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <div onclick="location.href='index.html'">ホーム</div>
+    <div id="name">投稿名義</div>
+    <button onclick="change_name()">変更</button>
+    <textarea></textarea>
+    <button onclick="send_text()">投稿</button>
+</body>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function change_name(){
+            author = window.prompt("ユーザー名を入力してください", "");
+            localStorage.setItem('username', author);
+            document.getElementById("name").innerHTML = `投稿名義：${author}`;
+        }
+
+        const easyMDE = new EasyMDE();
+        document.getElementById("name").innerHTML = `投稿名義：${localStorage.getItem('username')}`;
+
+        async function send_text(){
+            let author = localStorage.getItem('username');
+            if (author == null){
+                change_name();
+            };
+
+            let text = easyMDE.value();
+            if (text == ""){return;}
+            const response = await fetch("/post_text", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text, author })
+            });
+            let res = await response.text();
+            if (res==''){
+                window.location.href = 'index.html';
+            }else if (res=='double'){
+                alert("重複あり");
+            }else{
+                console.log("error");
+            }
+        }
+    </script>
+</head>
+
+</html>
