@@ -25,6 +25,10 @@
             window.location.href = `post_view.html?@&@${title}`;
         }
 
+        function article_edit(title){
+            window.location.href = `post_form.html?@&@${title}`;
+        }
+
         function post_article(){
             window.location.href = "post_form.html";
         }
@@ -35,7 +39,9 @@
             titles = sp_items(titles);
             authors = sp_items(authors);
             for (const i in titles){
-                const add_html = `<div style="border: ridge" onclick="article_show('${titles[i]}')">${titles[i]} by ${authors[i]}</div>`
+                const add_html = `<div style="border: ridge" ` +
+                    `onclick="article_show('${titles[i]}')">${titles[i]} by ${authors[i]}</div>`+
+                    `<button onclick="article_edit('${titles[i]}')">編集</button>`;
                 document.getElementById('article_list').innerHTML += add_html;
             }
         }

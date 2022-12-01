@@ -21,7 +21,21 @@
             document.getElementById("name").innerHTML = `投稿名義：${author}`;
         }
 
+        async function init_text(){
+            if (decodeURI(location.href).split('@&@').length != 1){
+                let title = decodeURI(location.href).split('@&@')[1];
+                const response = await fetch("/get_text", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title })
+                });
+                text = await response.text();
+                easyMDE.value(text);
+            }
+        }
+
         const easyMDE = new EasyMDE();
+        init_text();
         document.getElementById("name").innerHTML = `投稿名義：${localStorage.getItem('username')}`;
 
         async function send_text(){
@@ -30,18 +44,26 @@
                 change_name();
             };
 
+            // 旧文書の削除
+            let title = decodeURI(location.href).split('@&@')[1];
+            let response = await fetch("/del_post", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title })
+            });
+
             let text = easyMDE.value();
             if (text == ""){return;}
-            const response = await fetch("/post_text", {
+            response = await fetch("/post_text", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text, author })
             });
             let res = await response.text();
-            if (res==''){
-                window.location.href = 'index.html';
-            }else if (res=='double'){
+            if (decodeURI(location.href).split('@&@').length == 1 && res=='double'){
                 alert("重複あり");
+            }else if (res==''){
+                window.location.href = 'index.html';
             }else{
                 console.log("error");
             }
