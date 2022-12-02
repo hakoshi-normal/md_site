@@ -7,6 +7,7 @@
     <button onclick="change_name()">変更</button>
     <textarea></textarea>
     <button onclick="send_text()">投稿</button>
+    <input type="file" id="selfile">
 </body>
 
 <head>
@@ -15,14 +16,14 @@
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <script>
-        function change_name(){
+        function change_name() {
             author = window.prompt("ユーザー名を入力してください", "");
             localStorage.setItem('username', author);
             document.getElementById("name").innerHTML = `投稿名義：${author}`;
         }
 
-        async function init_text(){
-            if (decodeURI(location.href).split('@&@').length != 1){
+        async function init_text() {
+            if (decodeURI(location.href).split('@&@').length != 1) {
                 let title = decodeURI(location.href).split('@&@')[1];
                 const response = await fetch("/get_text", {
                     method: "POST",
@@ -38,9 +39,21 @@
         init_text();
         document.getElementById("name").innerHTML = `投稿名義：${localStorage.getItem('username')}`;
 
-        async function send_text(){
+        // ファイル入力
+        var obj1 = document.getElementById("selfile");
+        obj1.addEventListener("change", function (evt) {
+            var file = evt.target.files;
+            var reader = new FileReader();
+            reader.readAsText(file[0]);
+
+            reader.onload = function (ev) {
+                easyMDE.value(reader.result);
+            }
+        }, false);
+
+        async function send_text() {
             let author = localStorage.getItem('username');
-            if (author == null){
+            if (author == null) {
                 change_name();
             };
 
@@ -53,18 +66,18 @@
             });
 
             let text = easyMDE.value();
-            if (text == ""){return;}
+            if (text == "") { return; }
             response = await fetch("/post_text", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text, author })
             });
             let res = await response.text();
-            if (decodeURI(location.href).split('@&@').length == 1 && res=='double'){
+            if (decodeURI(location.href).split('@&@').length == 1 && res == 'double') {
                 alert("重複あり");
-            }else if (res==''){
+            } else if (res == '') {
                 window.location.href = 'index.html';
-            }else{
+            } else {
                 console.log("error");
             }
         }
