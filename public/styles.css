@@ -1,3 +1,17 @@
 body {
     background: skyblue;
 }
+
+.article_label {
+    background-color: white;
+    border-radius: 10px;
+    border: ridge;
+}
+
+.edit_button {
+    margin-left:90%;
+}
+
+.home_button {
+    background-color: white;
+}

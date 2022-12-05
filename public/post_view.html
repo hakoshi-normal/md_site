@@ -2,8 +2,8 @@
 <html>
 
 <body>
-    <div onclick="location.href='index.html'">ホーム</div>
-    <button onclick="del_article()">投稿削除</button>
+    <div class="home_button" onclick="location.href='index.html'">ホーム</div>
+    <!-- <button onclick="del_article()">投稿削除</button> -->
     <div id="viewer"></div>
 </body>
 
@@ -14,20 +14,6 @@
     <link rel="stylesheet" href="highlight/styles/github.min.css">
     <link rel="stylesheet" href="styles.css">
     <script>
-        async function del_article(){
-            let title = decodeURI(location.href).split('@&@')[1];
-            const response = await fetch("/del_post", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title })
-            });
-            let res = await response.text();
-            if (res==''){
-                window.location.href = 'index.html';
-            }
-        }
-
-
         marked.setOptions({
             langPrefix: '',
             highlight: function (code, lang) {

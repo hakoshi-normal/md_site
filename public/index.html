@@ -33,15 +33,40 @@
             window.location.href = "post_form.html";
         }
 
+        function headline(title, author){
+            return `<div class="article_label"` +
+            `onclick="article_show('${title}')">${title} by ${author}</div>`+
+            `<button class="edit_button" onclick="article_edit('${title}')">編集</button>`+
+            `<button class="edit_button" onclick="del_article('${title}', '${author}')">投稿削除</button>`;
+        }
+
+        async function del_article(title, author){
+            if (localStorage.getItem('username') != author){
+                const author2 = window.prompt("ユーザー名を入力してください", "");
+                if (author != author2){
+                    alert("ユーザー名が誤りです");
+                    return;
+                }
+            }
+            const response = await fetch("/del_post", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title })
+            });
+            let res = await response.text();
+            if (res==''){
+                window.location.href = 'index.html';
+            }
+        }
+
+
         window.onload = async (event) => {
             const response = await fetch("/get_title", { method: "GET" });
             let [titles, authors] = sp_types(await response.text());
             titles = sp_items(titles);
             authors = sp_items(authors);
             for (const i in titles){
-                const add_html = `<div style="border: ridge" ` +
-                    `onclick="article_show('${titles[i]}')">${titles[i]} by ${authors[i]}</div>`+
-                    `<button onclick="article_edit('${titles[i]}')">編集</button>`;
+                const add_html = headline(titles[i], authors[i]);
                 document.getElementById('article_list').innerHTML += add_html;
             }
         }
